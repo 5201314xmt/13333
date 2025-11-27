@@ -4,7 +4,6 @@ import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-toast',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './toast.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -10,7 +10,6 @@ type Page = 'dashboard' | 'traffic' | 'logs' | 'settings';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

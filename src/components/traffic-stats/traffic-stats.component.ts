@@ -1,5 +1,3 @@
-
-
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +13,6 @@ interface TrafficRecord {
 
 @Component({
   selector: 'app-traffic-stats',
-  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './traffic-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -6,7 +6,6 @@ import { SettingsService, AutomationSettings } from '../../services/settings.ser
 
 @Component({
   selector: 'app-settings',
-  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './settings.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

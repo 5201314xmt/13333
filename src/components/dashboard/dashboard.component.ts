@@ -5,7 +5,6 @@ import { ManagedVps } from '../../models/vps.model';
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

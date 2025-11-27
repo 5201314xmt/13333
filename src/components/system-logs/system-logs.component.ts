@@ -1,5 +1,3 @@
-
-
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +11,6 @@ interface LogEntry {
 
 @Component({
   selector: 'app-system-logs',
-  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './system-logs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
