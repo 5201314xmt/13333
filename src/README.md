@@ -32,22 +32,171 @@
 本项目是一个功能完善的**纯前端应用原型**。为了能够独立开发和测试用户界面与自动化逻辑，所有的后端交互都在前端内部进行了**模拟**。
 
 - **核心服务:** `src/services/api.service.ts`
-  - **功能:** 这个服务扮演了一个虚拟后端。它负责模拟 Netcup SCP API、qBittorrent 和 Vertex 实例的状态，并根据 `SettingsService` 中的配置来执行自动化逻辑。
-
 - **配置服务:** `src/services/settings.service.ts`
-  - **功能:** 这是所有应用配置的“唯一真实来源”。它负责：
-    1.  **管理配置状态:** 使用 Angular Signals 保存所有配置项（通知、自动化策略等）。
-    2.  **持久化:** 在应用启动时从 `localStorage` 加载配置，并在用户点击“保存”时将当前配置写回 `localStorage`。
 
 在实际生产环境中，`ApiService` 将被修改，移除所有模拟数据，并替换为真实的 HTTP 请求，指向一个您自己开发的后端服务器。
 
-## 📊 技术栈
+---
 
-- **前端框架:** Angular 20+ (TypeScript)
-- **状态管理:** Angular Signals
-- **样式方案:** Tailwind CSS (通过 CDN 加载)
-- **核心逻辑:** 所有后端交互均在 `src/services/api.service.ts` 中进行模拟。
+## 🚀 在 Debian 12 上通过 Git 和 Docker 部署 (小白教程)
 
-## 🚀 运行项目
+本指南将引导您从一个全新的 Debian 12 服务器开始，一步步部署此应用程序。此方法使用 Docker，它会将应用程序及其所有依赖项打包到一个隔离的“容器”中，这是最简单、最可靠的部署方式。
 
-该项目被配置为在支持 Web-based IDE 的环境中直接运行，无需本地编译或部署步骤。当您打开项目时，它应该会自动启动并显示应用程序界面。所有代码的更改都会实时反映在预览中。
+### 第 1 步：准备您的服务器
+
+首先，通过 SSH 连接到您的 Debian 12 VPS。然后，更新您的系统软件包列表：
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+### 第 2 步：安装 Git 和 Docker
+
+您需要 `git` 来从仓库下载代码，以及 `docker` 来运行应用程序。
+
+```bash
+# 安装 Git
+sudo apt install git -y
+
+# 安装 Docker 和 Docker Compose
+sudo apt install docker.io docker-compose -y
+
+# 启动并设置 Docker 开机自启
+sudo systemctl start docker
+sudo systemctl enable docker
+```
+
+### 第 3 步：克隆项目代码
+
+从 GitHub (或您的代码仓库) 克隆项目到您的服务器上。
+
+```bash
+git clone <你的项目仓库URL>
+cd <你的项目目录名>
+```
+*注意：请将 `<你的项目仓库URL>` 和 `<你的项目目录名>` 替换为实际的地址和名称。*
+
+### 第 4 步：创建部署所需的文件
+
+在项目根目录（与 `index.html` 文件同级）中，您需要手动创建以下四个文件。
+
+#### 1. 创建 `Dockerfile`
+这个文件告诉 Docker 如何构建应用程序的镜像。
+
+```bash
+nano Dockerfile
+```
+
+将以下内容**完整复制**并粘贴到文件中：
+
+```dockerfile
+# 使用轻量级的 Nginx 镜像
+FROM nginx:alpine
+
+# 将当前目录下的所有文件复制到 Nginx 的 web 根目录
+COPY . /usr/share/nginx/html
+
+# 复制自定义的 Nginx 配置文件
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# 暴露容器的 80 端口
+EXPOSE 80
+
+# 启动 Nginx 服务
+CMD ["nginx", "-g", "daemon off;"]
+```
+按 `Ctrl+X`，然后按 `Y`，最后按 `Enter` 保存并退出。
+
+#### 2. 创建 `docker-compose.yml`
+这个文件用于定义和管理 Docker 容器。
+
+```bash
+nano docker-compose.yml
+```
+
+将以下内容**完整复制**并粘贴到文件中：
+
+```yaml
+version: '3.8'
+
+services:
+  frontend:
+    build: .
+    container_name: netcup_sentinel_frontend
+    ports:
+      - "74674:80"
+    restart: unless-stopped
+```
+保存并退出 (`Ctrl+X`, `Y`, `Enter`)。
+
+#### 3. 创建 `nginx.conf`
+这是 Nginx Web 服务器的配置文件。
+
+```bash
+nano nginx.conf
+```
+
+将以下内容**完整复制**并粘贴到文件中：
+
+```nginx
+server {
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+保存并退出 (`Ctrl+X`, `Y`, `Enter`)。
+
+#### 4. 创建 `deploy.sh` (一键部署脚本)
+这个脚本将自动化整个部署过程。
+
+```bash
+nano deploy.sh
+```
+
+将以下内容**完整复制**并粘贴到文件中：
+
+```bash
+#!/bin/bash
+set -e
+
+echo "🚀 开始部署 Netcup VPS Sentinel..."
+
+echo "🛑 停止并删除旧的容器..."
+docker-compose down
+
+echo "🔨 构建并启动新的容器..."
+docker-compose up --build -d
+
+echo "✅ 部署成功！"
+echo "🌐 应用正在运行在 http://YOUR_SERVER_IP:74674"
+echo "   请将 YOUR_SERVER_IP 替换为你的服务器公网IP地址。"
+echo "📊 使用 'docker-compose logs -f' 查看实时日志。"
+```
+保存并退出 (`Ctrl+X`, `Y`, `Enter`)。
+
+### 第 5 步：运行部署脚本！
+
+现在，您拥有了所有需要的文件。只需一个命令即可完成部署。
+
+```bash
+# 首先，给部署脚本添加执行权限
+chmod +x deploy.sh
+
+# 然后，运行脚本
+./deploy.sh
+```
+
+脚本会自动完成所有工作。完成后，您就可以通过浏览器访问 `http://<你的服务器IP>:74674` 来使用 Netcup VPS Sentinel 了！
+
+### 更新应用程序
+
+当您需要更新代码时，只需：
+1.  在项目目录中运行 `git pull` 拉取最新的代码。
+2.  再次运行 `./deploy.sh` 重新部署。
+Docker 会自动使用最新的代码重建镜像并启动新的容器。
