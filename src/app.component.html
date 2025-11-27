@@ -1,4 +1,4 @@
-
+<app-toast></app-toast>
 <div class="min-h-screen bg-gray-900 text-gray-200 flex flex-col">
   <header class="bg-gray-800 shadow-md sticky top-0 z-10">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -11,9 +11,8 @@
           @for (page of pages; track page.id) {
             <button
               (click)="changePage(page.id)"
-              [class.bg-gray-700]="isCurrentPage(page.id)"
-              [class.text-white]="isCurrentPage(page.id)"
-              class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+              [class]="currentPage() === page.id ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'"
+              class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
               {{ page.name }}
             </button>
           }

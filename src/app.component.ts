@@ -1,10 +1,10 @@
-
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { TrafficStatsComponent } from './components/traffic-stats/traffic-stats.component';
 import { SystemLogsComponent } from './components/system-logs/system-logs.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { ToastComponent } from './components/toast/toast.component';
 
 type Page = 'dashboard' | 'traffic' | 'logs' | 'settings';
 
@@ -17,7 +17,8 @@ type Page = 'dashboard' | 'traffic' | 'logs' | 'settings';
     DashboardComponent,
     TrafficStatsComponent,
     SystemLogsComponent,
-    SettingsComponent
+    SettingsComponent,
+    ToastComponent
   ]
 })
 export class AppComponent {
@@ -32,9 +33,5 @@ export class AppComponent {
 
   changePage(page: Page) {
     this.currentPage.set(page);
-  }
-
-  isCurrentPage(page: Page): boolean {
-    return this.currentPage() === page;
   }
 }

@@ -1,137 +1,155 @@
-<div class="space-y-8">
-  <!-- Global Stats -->
-  <div>
-    <h2 class="text-2xl font-semibold mb-4 text-gray-200">全局统计</h2>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
-        <p class="text-sm text-gray-400">VPS 总数</p>
-        <p class="text-2xl font-bold text-blue-400">{{ stats().totalVps }}</p>
-      </div>
-      <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
-        <p class="text-sm text-gray-400">受限实例</p>
-        <p class="text-2xl font-bold text-red-500">{{ stats().throttledVps }}</p>
-      </div>
-      <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
-        <p class="text-sm text-gray-400">实时上传</p>
-        <p class="text-2xl font-bold text-green-400">{{ stats().totalUpload }} MB/s</p>
-      </div>
-      <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
-        <p class="text-sm text-gray-400">实时下载</p>
-        <p class="text-2xl font-bold text-yellow-400">{{ stats().totalDownload }} MB/s</p>
-      </div>
-      <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center col-span-2 md:col-span-1 lg:col-span-1">
-        <p class="text-sm text-gray-400">活跃种子</p>
-        <p class="text-2xl font-bold text-purple-400">{{ stats().activeTorrents }}</p>
-      </div>
-    </div>
+@if (loading()) {
+  <div class="flex justify-center items-center h-64">
+    <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <span class="text-xl text-gray-400">正在加载数据...</span>
   </div>
-
-  <!-- SCP Monitoring -->
-  <div>
-    <h2 class="text-2xl font-semibold mb-4 text-gray-200">SCP 监控</h2>
-    <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-700">
-        <thead class="bg-gray-700">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">VPS 名称</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">IP 地址</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">健康状态</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">上次检查</th>
-          </tr>
-        </thead>
-        <tbody class="bg-gray-800 divide-y divide-gray-700">
-          @for (vps of managedVpsList(); track vps.ip) {
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{{ vps.name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ vps.ip }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <span [class.bg-green-500]="vps.scp.status === 'Healthy'" [class.bg-red-500]="vps.scp.status === 'Throttled'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white">
-                  {{ vps.scp.status === 'Healthy' ? '健康' : '受限' }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ vps.scp.lastCheck }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- qBittorrent Control -->
-    <div>
-      <h2 class="text-2xl font-semibold mb-4 text-gray-200">qBittorrent 控制</h2>
-      <div class="space-y-4">
-        @for (vps of managedVpsList(); track vps.ip) {
-          @if (vps.qbittorrent; as qbit) {
-            <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
-              <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white">{{ vps.name }}</h3>
-                <span 
-                  [class.bg-green-500]="qbit.status === 'ONLINE'" 
-                  [class.bg-yellow-500]="qbit.status === 'PAUSED'"
-                  [class.bg-red-600]="qbit.status === 'PAUSED_BY_AUTOMATION'"
-                  class="px-2 py-1 text-xs font-semibold rounded-full text-white">
-                  {{ qbit.status === 'PAUSED_BY_AUTOMATION' ? '自动暂停' : qbit.status }}
-                </span>
-              </div>
-              <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p class="text-gray-400">速度</p>
-                  <p class="text-white">↑ {{ qbit.upload }} MB/s / ↓ {{ qbit.download }} MB/s</p>
-                </div>
-                <div>
-                  <p class="text-gray-400">今日流量</p>
-                  <p class="text-white">↑ {{ qbit.todayUpload }} / ↓ {{ qbit.todayDownload }}</p>
-                </div>
-              </div>
-              <div class="mt-4 flex justify-end">
-                <button (click)="toggleQbit(vps.ip)" class="px-4 py-2 text-sm font-medium rounded-md text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  [disabled]="qbit.status === 'PAUSED_BY_AUTOMATION'"
-                  [class.bg-yellow-600]="qbit.status === 'ONLINE'" [class.hover:bg-yellow-700]="qbit.status === 'ONLINE'"
-                  [class.bg-green-600]="qbit.status === 'PAUSED'" [class.hover:bg-green-700]="qbit.status === 'PAUSED'"
-                >
-                  {{ qbit.status === 'ONLINE' ? '暂停' : '恢复' }}
-                </button>
-              </div>
-            </div>
-          }
-        }
+} @else {
+  @if (managedVpsList().length > 0) {
+    <div class="space-y-8">
+      <!-- Global Stats -->
+      <div>
+        <h2 class="text-2xl font-semibold mb-4 text-gray-200">全局统计</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+            <p class="text-sm text-gray-400">VPS 总数</p>
+            <p class="text-2xl font-bold text-blue-400">{{ stats().totalVps }}</p>
+          </div>
+          <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+            <p class="text-sm text-gray-400">受限实例</p>
+            <p class="text-2xl font-bold text-red-500">{{ stats().throttledVps }}</p>
+          </div>
+          <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+            <p class="text-sm text-gray-400">实时上传</p>
+            <p class="text-2xl font-bold text-green-400">{{ stats().totalUpload }} MB/s</p>
+          </div>
+          <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+            <p class="text-sm text-gray-400">实时下载</p>
+            <p class="text-2xl font-bold text-yellow-400">{{ stats().totalDownload }} MB/s</p>
+          </div>
+          <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center col-span-2 md:col-span-1 lg:col-span-1">
+            <p class="text-sm text-gray-400">活跃种子</p>
+            <p class="text-2xl font-bold text-purple-400">{{ stats().activeTorrents }}</p>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Vertex Downloader -->
-    <div>
-      <h2 class="text-2xl font-semibold mb-4 text-gray-200">Vertex 下载器</h2>
-        <div class="space-y-4">
+      <!-- SCP Monitoring -->
+      <div>
+        <h2 class="text-2xl font-semibold mb-4 text-gray-200">SCP 监控</h2>
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-700">
+            <thead class="bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">VPS 名称</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">IP 地址</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">健康状态</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">上次检查</th>
+              </tr>
+            </thead>
+            <tbody class="bg-gray-800 divide-y divide-gray-700">
+              @for (vps of managedVpsList(); track vps.ip) {
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{{ vps.name }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ vps.ip }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span [class.bg-green-500]="vps.scp.status === 'Healthy'" [class.bg-red-500]="vps.scp.status === 'Throttled'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white">
+                      {{ vps.scp.status === 'Healthy' ? '健康' : '受限' }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ vps.scp.lastCheck }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- qBittorrent Control -->
+        <div>
+          <h2 class="text-2xl font-semibold mb-4 text-gray-200">qBittorrent 控制</h2>
+          <div class="space-y-4">
             @for (vps of managedVpsList(); track vps.ip) {
-              @if(vps.vertex; as vertex) {
-                <div class="bg-gray-800 p-4 rounded-lg shadow-lg flex items-center justify-between">
+              @if (vps.qbittorrent; as qbit) {
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                  <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white">{{ vps.name }}</h3>
+                    <span 
+                      [class.bg-green-500]="qbit.status === 'ONLINE'" 
+                      [class.bg-yellow-500]="qbit.status === 'PAUSED'"
+                      [class.bg-red-600]="qbit.status === 'PAUSED_BY_AUTOMATION'"
+                      class="px-2 py-1 text-xs font-semibold rounded-full text-white">
+                      {{ qbit.status === 'PAUSED_BY_AUTOMATION' ? '自动暂停' : qbit.status }}
+                    </span>
+                  </div>
+                  <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
                     <div>
-                        <h3 class="text-lg font-bold text-white">{{ vps.name }}</h3>
-                        <p class="text-sm text-gray-400">{{ vertex.id }}</p>
+                      <p class="text-gray-400">速度</p>
+                      <p class="text-white">↑ {{ qbit.upload }} MB/s / ↓ {{ qbit.download }} MB/s</p>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <span 
-                          [class.text-green-400]="vertex.enabled" 
-                          [class.text-red-400]="!vertex.enabled" class="text-sm font-semibold">
-                            @if(vps.scp.status === 'Throttled') {
-                                <span>自动禁用</span>
-                            } @else {
-                                <span>{{ vertex.enabled ? '已启用' : '已禁用' }}</span>
-                            }
-                        </span>
-                        <button (click)="toggleVertex(vps.ip)" class="px-4 py-2 text-sm font-medium rounded-md text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                          [disabled]="vps.scp.status === 'Throttled'"
-                          [class.bg-red-600]="vertex.enabled" [class.hover:bg-red-700]="vertex.enabled"
-                          [class.bg-green-600]="!vertex.enabled" [class.hover:bg-green-700]="!vertex.enabled">
-                        {{ vertex.enabled ? '禁用' : '启用' }}
-                        </button>
+                    <div>
+                      <p class="text-gray-400">今日流量</p>
+                      <p class="text-white">↑ {{ qbit.todayUpload }} / ↓ {{ qbit.todayDownload }}</p>
                     </div>
+                  </div>
+                  <div class="mt-4 flex justify-end">
+                    <button (click)="toggleQbit(vps.ip)" class="px-4 py-2 text-sm font-medium rounded-md text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      [disabled]="qbit.status === 'PAUSED_BY_AUTOMATION'"
+                      [class.bg-yellow-600]="qbit.status === 'ONLINE'" [class.hover:bg-yellow-700]="qbit.status === 'ONLINE'"
+                      [class.bg-green-600]="qbit.status === 'PAUSED'" [class.hover:bg-green-700]="qbit.status === 'PAUSED'"
+                    >
+                      {{ qbit.status === 'ONLINE' ? '暂停' : '恢复' }}
+                    </button>
+                  </div>
                 </div>
               }
             }
+          </div>
         </div>
+
+        <!-- Vertex Downloader -->
+        <div>
+          <h2 class="text-2xl font-semibold mb-4 text-gray-200">Vertex 下载器</h2>
+            <div class="space-y-4">
+                @for (vps of managedVpsList(); track vps.ip) {
+                  @if(vps.vertex; as vertex) {
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">{{ vps.name }}</h3>
+                            <p class="text-sm text-gray-400">{{ vertex.id }}</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span 
+                              [class.text-green-400]="vertex.enabled" 
+                              [class.text-red-400]="!vertex.enabled" class="text-sm font-semibold">
+                                @if(vps.scp.status === 'Throttled') {
+                                    <span>自动禁用</span>
+                                } @else {
+                                    <span>{{ vertex.enabled ? '已启用' : '已禁用' }}</span>
+                                }
+                            </span>
+                            <button (click)="toggleVertex(vps.ip)" class="px-4 py-2 text-sm font-medium rounded-md text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              [disabled]="vps.scp.status === 'Throttled'"
+                              [class.bg-red-600]="vertex.enabled" [class.hover:bg-red-700]="vertex.enabled"
+                              [class.bg-green-600]="!vertex.enabled" [class.hover:bg-green-700]="!vertex.enabled">
+                            {{ vertex.enabled ? '禁用' : '启用' }}
+                            </button>
+                        </div>
+                    </div>
+                  }
+                }
+            </div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+  } @else {
+    <div class="flex flex-col items-center justify-center h-64 bg-gray-800 rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 mb-4"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      <h3 class="text-xl font-semibold text-white">没有找到 VPS 实例</h3>
+      <p class="text-gray-400 mt-2">请前往 "配置管理" 页面添加您的 Netcup SCP 账号。</p>
+    </div>
+  }
+}

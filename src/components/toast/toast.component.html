@@ -1,0 +1,13 @@
+@if (toastState(); as toast) {
+  <div 
+    class="fixed top-5 right-5 z-50 px-6 py-4 rounded-lg shadow-lg text-white animate-slide-in-right"
+    [class]="getBackgroundColorClass()"
+    >
+    <div class="flex items-center">
+      <span class="font-semibold">{{ toast.message }}</span>
+      <button (click)="toastService.hide()" class="ml-4 text-white hover:text-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+  </div>
+}

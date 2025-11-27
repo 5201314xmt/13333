@@ -13,6 +13,7 @@ import { ManagedVps } from '../../models/vps.model';
 export class DashboardComponent {
   private apiService = inject(ApiService);
   managedVpsList = this.apiService.managedVpsList;
+  loading = this.apiService.loading;
 
   stats = computed(() => {
     const vpsList = this.managedVpsList();
