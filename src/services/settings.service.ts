@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, effect, inject } from '@angular/core';
+import { ToastService } from './toast.service';
 
 export interface ScpAccount {
   id: number;
@@ -31,6 +32,10 @@ const SETTINGS_KEY = 'netcup-sentinel-settings';
   providedIn: 'root'
 })
 export class SettingsService {
+  private toastService = inject(ToastService);
+  private saveTimeout: any;
+  private isInitialLoad = true;
+
   scpAccounts = signal<ScpAccount[]>([]);
   
   notifications = signal<NotificationSettings>({
@@ -53,6 +58,37 @@ export class SettingsService {
 
   constructor() {
     this.loadSettings();
+
+    // Auto-save effect
+    effect(() => {
+        // This effect will run whenever any of these signals change.
+        const settingsToSave = {
+            scpAccounts: this.scpAccounts(),
+            notifications: this.notifications(),
+            automation: this.automation(),
+            integrations: this.integrations()
+        };
+
+        // Debounce the save operation
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
+        }
+
+        this.saveTimeout = setTimeout(() => {
+            try {
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsToSave));
+                // Only show toast if it's not the initial load
+                if (!this.isInitialLoad) {
+                    this.toastService.show('设置已自动保存', 'success', 2000);
+                }
+                // Mark initial load as complete after the first "change" (which is the loading itself)
+                this.isInitialLoad = false;
+            } catch (e) {
+                console.error('Failed to save settings to localStorage', e);
+                this.toastService.show('无法保存设置', 'error');
+            }
+        }, 1000); // Wait 1 second after the last change
+    });
   }
 
   addScpAccount(login: string) {
@@ -79,20 +115,6 @@ export class SettingsService {
       }
     } catch (e) {
       console.error('Failed to load settings from localStorage', e);
-    }
-  }
-
-  saveSettings() {
-    try {
-      const settingsToSave = {
-        scpAccounts: this.scpAccounts(),
-        notifications: this.notifications(),
-        automation: this.automation(),
-        integrations: this.integrations()
-      };
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settingsToSave));
-    } catch (e) {
-      console.error('Failed to save settings to localStorage', e);
     }
   }
 }

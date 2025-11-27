@@ -57,11 +57,6 @@ export class SettingsComponent {
     }, 1500);
   }
 
-  saveSettings() {
-    this.settingsService.saveSettings();
-    this.toastService.show('设置已保存！', 'success');
-  }
-
   // --- Event Handlers for Settings Forms ---
 
   handleNotificationsInput(event: Event, field: 'telegramToken' | 'chatId') {
