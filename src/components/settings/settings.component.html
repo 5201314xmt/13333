@@ -1,0 +1,110 @@
+<div class="max-w-4xl mx-auto space-y-12">
+  <h2 class="text-3xl font-bold text-center text-gray-200">配置管理</h2>
+
+  <!-- Netcup SCP Accounts -->
+  <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h3 class="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">Netcup SCP 账号管理</h3>
+    <div class="space-y-4 mb-4">
+      @for(account of scpAccounts(); track account.id) {
+        <div class="flex items-center justify-between bg-gray-700 p-3 rounded-md">
+          <div class="flex items-center space-x-4">
+            <span class="text-gray-300">{{ account.login }}</span>
+            <span [class.text-green-400]="account.status === 'Active'" [class.text-gray-500]="account.status !== 'Active'" class="text-xs font-bold">{{ account.status }}</span>
+          </div>
+          <button (click)="removeAccount(account.id)" class="text-red-500 hover:text-red-400 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (showAddAccountForm()) {
+      <div class="bg-gray-700 p-4 rounded-md mt-4 space-y-4">
+        <h4 class="text-md font-semibold text-white">添加新账号</h4>
+        <div>
+          <label for="new-login" class="block text-sm font-medium text-gray-400 mb-1">登录名</label>
+          <input type="text" id="new-login" [value]="newAccountLogin()" (input)="newAccountLogin.set($any($event.target).value)" class="w-full bg-gray-600 border border-gray-500 rounded-md px-3 py-2 text-white" placeholder="netcup_username">
+        </div>
+        <div>
+          <label for="new-password" class="block text-sm font-medium text-gray-400 mb-1">密码</label>
+          <input type="password" id="new-password" [value]="newAccountPassword()" (input)="newAccountPassword.set($any($event.target).value)" class="w-full bg-gray-600 border border-gray-500 rounded-md px-3 py-2 text-white" placeholder="••••••••">
+        </div>
+        <div class="flex justify-end space-x-2">
+           <button (click)="showAddAccountForm.set(false)" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition-colors">取消</button>
+           <button (click)="addAccount()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors">保存账号</button>
+        </div>
+      </div>
+    } @else {
+      <button (click)="showAddAccountForm.set(true)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">添加账号</button>
+    }
+  </div>
+  
+  <!-- Notification System -->
+  <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h3 class="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">通知系统配置</h3>
+    <div class="space-y-4">
+      <div>
+        <label for="telegram-token" class="block text-sm font-medium text-gray-400 mb-1">Telegram Bot Token</label>
+        <input type="password" id="telegram-token" [value]="notifications().telegramToken" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+      </div>
+      <div>
+        <label for="chat-id" class="block text-sm font-medium text-gray-400 mb-1">Chat ID</label>
+        <input type="text" id="chat-id" [value]="notifications().chatId" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+      </div>
+    </div>
+    <button (click)="testNotification()" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors">发送测试通知</button>
+  </div>
+
+  <!-- Automation Policy -->
+  <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h3 class="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">自动化策略设置</h3>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <label for="automation-enabled" class="text-gray-300">启用自动化策略</label>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="automation-enabled" class="sr-only peer" [checked]="automation().enabled">
+          <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+        </label>
+      </div>
+      <div>
+        <label for="poll-interval" class="block text-sm font-medium text-gray-400 mb-1">监控轮询间隔 (秒)</label>
+        <input type="number" id="poll-interval" [value]="automation().interval" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+      </div>
+      <div>
+        <label for="throttle-action" class="block text-sm font-medium text-gray-400 mb-1">限速后自动动作</label>
+        <select id="throttle-action" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+          <option value="pause" [selected]="automation().action === 'pause'">暂停所有下载</option>
+          <option value="limit" [selected]="automation().action === 'limit'">限制全局速度</option>
+          <option value="notify" [selected]="automation().action === 'notify'">仅通知</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Integration Services -->
+  <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+    <h3 class="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">集成服务配置</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">qBittorrent 全局用户名</label>
+        <input type="text" [value]="integrations().qbitUser" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">qBittorrent 全局密码</label>
+        <input type="password" [value]="integrations().qbitPass" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">Vertex 配置文件路径</label>
+        <input type="text" [value]="integrations().vertexPath" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+      </div>
+       <div>
+        <label class="block text-sm font-medium text-gray-400 mb-1">API 端点</label>
+        <input type="text" [value]="integrations().apiEndpoint" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-6">
+    <button (click)="saveSettings()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-colors text-lg">保存所有设置</button>
+  </div>
+</div>

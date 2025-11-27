@@ -1,0 +1,51 @@
+
+<div class="space-y-6">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+    <h2 class="text-2xl font-semibold text-gray-200 mb-4 md:mb-0">系统日志</h2>
+    <div class="relative">
+      <input 
+        type="text" 
+        [value]="keyword()"
+        (input)="handleKeyword($event)"
+        placeholder="搜索日志..." 
+        class="bg-gray-700 border border-gray-600 rounded-md pl-10 pr-4 py-2 text-white w-full md:w-64 focus:ring-blue-500 focus:border-blue-500"
+      />
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-700">
+      <thead class="bg-gray-700">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider w-1/5">时间戳</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">级别</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">来源</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider w-3/5">消息</th>
+        </tr>
+      </thead>
+      <tbody class="bg-gray-800 divide-y divide-gray-700">
+        @if (filteredLogs().length > 0) {
+          @for (log of filteredLogs(); track log.timestamp + log.message) {
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">{{ log.timestamp }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                <span [class]="getLevelClass(log.level)">{{ log.level }}</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ log.source }}</td>
+              <td class="px-6 py-4 whitespace-pre-wrap text-sm text-gray-200 font-mono">{{ log.message }}</td>
+            </tr>
+          }
+        } @else {
+          <tr>
+            <td colspan="4" class="text-center py-8 text-gray-500">
+              没有找到匹配的日志记录
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

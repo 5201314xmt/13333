@@ -1,0 +1,45 @@
+
+<div class="min-h-screen bg-gray-900 text-gray-200 flex flex-col">
+  <header class="bg-gray-800 shadow-md sticky top-0 z-10">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8 text-blue-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <h1 class="text-xl font-bold ml-3">Netcup VPS Sentinel</h1>
+        </div>
+        <nav class="hidden md:flex space-x-4">
+          @for (page of pages; track page.id) {
+            <button
+              (click)="changePage(page.id)"
+              [class.bg-gray-700]="isCurrentPage(page.id)"
+              [class.text-white]="isCurrentPage(page.id)"
+              class="px-3 py-2 rounded-md text-sm font-medium text-gray-400 hover:bg-gray-700 hover:text-white transition-colors duration-200">
+              {{ page.name }}
+            </button>
+          }
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
+    @switch (currentPage()) {
+      @case ('dashboard') {
+        <app-dashboard></app-dashboard>
+      }
+      @case ('traffic') {
+        <app-traffic-stats></app-traffic-stats>
+      }
+      @case ('logs') {
+        <app-system-logs></app-system-logs>
+      }
+      @case ('settings') {
+        <app-settings></app-settings>
+      }
+    }
+  </main>
+  
+  <footer class="bg-gray-800 text-center py-4 text-sm text-gray-500">
+    Netcup VPS Sentinel &copy; 2024
+  </footer>
+</div>

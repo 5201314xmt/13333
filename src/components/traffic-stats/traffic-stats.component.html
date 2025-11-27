@@ -1,0 +1,69 @@
+
+<div class="space-y-6">
+  <h2 class="text-2xl font-semibold text-gray-200">流量统计</h2>
+  
+  <!-- Filters -->
+  <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="flex flex-col">
+        <label for="start-date" class="text-sm font-medium text-gray-400 mb-1">开始日期</label>
+        <input type="date" id="start-date" [value]="startDate()" (input)="handleStartDate($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div class="flex flex-col">
+        <label for="end-date" class="text-sm font-medium text-gray-400 mb-1">结束日期</label>
+        <input type="date" id="end-date" [value]="endDate()" (input)="handleEndDate($event)" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div class="flex flex-col">
+        <label for="keyword-search" class="text-sm font-medium text-gray-400 mb-1">关键词搜索</label>
+        <input type="text" id="keyword-search" [value]="keyword()" (input)="handleKeyword($event)" placeholder="IP / VPS名称 / Vertex别名" class="bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-blue-500 focus:border-blue-500">
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+      <p class="text-sm text-gray-400">总上传量</p>
+      <p class="text-3xl font-bold text-green-400">{{ formatBytes(totalUpload()) }}</p>
+    </div>
+    <div class="bg-gray-800 p-4 rounded-lg shadow-lg text-center">
+      <p class="text-sm text-gray-400">总下载量</p>
+      <p class="text-3xl font-bold text-yellow-400">{{ formatBytes(totalDownload()) }}</p>
+    </div>
+  </div>
+
+  <!-- Traffic Data Table -->
+  <div class="bg-gray-800 rounded-lg shadow-lg overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-700">
+      <thead class="bg-gray-700">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">日期</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">实例</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">上传</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">下载</th>
+        </tr>
+      </thead>
+      <tbody class="bg-gray-800 divide-y divide-gray-700">
+        @if (filteredTraffic().length > 0) {
+          @for (record of filteredTraffic(); track record.date + record.instance) {
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ record.date }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                <div>{{ record.instance }}</div>
+                <div class="text-xs text-gray-500">{{ record.ip }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-green-400">{{ record.upload.toFixed(2) }} GB</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-400">{{ record.download.toFixed(2) }} GB</td>
+            </tr>
+          }
+        } @else {
+          <tr>
+            <td colspan="4" class="text-center py-8 text-gray-500">
+              没有找到匹配的流量数据
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

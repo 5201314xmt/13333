@@ -1,0 +1,5 @@
+{
+  "name": "Netcup VPS Sentinel",
+  "description": "A web-based management system to monitor Netcup VPS traffic status and control downloaders like qBittorrent and Vertex.",
+  "requestFramePermissions": []
+}
