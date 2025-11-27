@@ -6,6 +6,7 @@ import { SettingsService, AutomationSettings } from '../../services/settings.ser
 
 @Component({
   selector: 'app-settings',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './settings.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +35,6 @@ export class SettingsComponent {
       return;
     }
     
-    // Logic is now in the service to update the signal
     this.settingsService.addScpAccount(login);
 
     this.toastService.show(`账号 ${login} 已添加`, 'success');
@@ -56,32 +56,49 @@ export class SettingsComponent {
     }, 1500);
   }
 
-  // --- Event Handlers for Settings Forms ---
-
-  handleNotificationsInput(event: Event, field: 'telegramToken' | 'chatId') {
-    const value = (event.target as HTMLInputElement).value;
-    this.notifications.update(n => ({ ...n, [field]: value }));
+  // --- Methods to update settings signals from the template ---
+  updateTelegramToken(event: Event) {
+    const token = (event.target as HTMLInputElement).value;
+    this.notifications.update(n => ({ ...n, telegramToken: token }));
   }
 
-  handleAutomationToggle(event: Event) {
+  updateChatId(event: Event) {
+    const id = (event.target as HTMLInputElement).value;
+    this.notifications.update(n => ({ ...n, chatId: id }));
+  }
+
+  updateAutomationEnabled(event: Event) {
     const enabled = (event.target as HTMLInputElement).checked;
     this.automation.update(a => ({ ...a, enabled }));
   }
 
-  handleAutomationInput(event: Event, field: 'interval') {
-    const value = parseInt((event.target as HTMLInputElement).value, 10);
-    if (!isNaN(value)) {
-      this.automation.update(a => ({ ...a, [field]: value }));
-    }
-  }
-
-  handleAutomationSelect(event: Event) {
-    const value = (event.target as HTMLSelectElement).value as AutomationSettings['action'];
-    this.automation.update(a => ({ ...a, action: value }));
-  }
-
-  handleIntegrationsInput(event: Event, field: 'qbitUser' | 'qbitPass' | 'vertexPath' | 'apiEndpoint') {
+  updateAutomationInterval(event: Event) {
     const value = (event.target as HTMLInputElement).value;
-    this.integrations.update(i => ({ ...i, [field]: value }));
+    this.automation.update(a => ({ ...a, interval: +value }));
+  }
+
+  updateAutomationAction(event: Event) {
+    const action = (event.target as HTMLSelectElement).value as AutomationSettings['action'];
+    this.automation.update(a => ({ ...a, action }));
+  }
+
+  updateQbitUser(event: Event) {
+    const user = (event.target as HTMLInputElement).value;
+    this.integrations.update(i => ({ ...i, qbitUser: user }));
+  }
+
+  updateQbitPass(event: Event) {
+    const pass = (event.target as HTMLInputElement).value;
+    this.integrations.update(i => ({ ...i, qbitPass: pass }));
+  }
+
+  updateVertexPath(event: Event) {
+    const path = (event.target as HTMLInputElement).value;
+    this.integrations.update(i => ({ ...i, vertexPath: path }));
+  }
+
+  updateApiEndpoint(event: Event) {
+    const endpoint = (event.target as HTMLInputElement).value;
+    this.integrations.update(i => ({ ...i, apiEndpoint: endpoint }));
   }
 }

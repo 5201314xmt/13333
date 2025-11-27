@@ -45,11 +45,11 @@
     <div class="space-y-4">
       <div>
         <label for="telegram-token" class="block text-sm font-medium text-gray-400 mb-1">Telegram Bot Token</label>
-        <input type="password" id="telegram-token" [value]="notifications().telegramToken" (input)="handleNotificationsInput($event, 'telegramToken')" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+        <input type="password" id="telegram-token" [value]="notifications().telegramToken" (input)="updateTelegramToken($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
       </div>
       <div>
         <label for="chat-id" class="block text-sm font-medium text-gray-400 mb-1">Chat ID</label>
-        <input type="text" id="chat-id" [value]="notifications().chatId" (input)="handleNotificationsInput($event, 'chatId')" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+        <input type="text" id="chat-id" [value]="notifications().chatId" (input)="updateChatId($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
       </div>
     </div>
     <button (click)="testNotification()" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors">发送测试通知</button>
@@ -62,17 +62,17 @@
       <div class="flex items-center justify-between">
         <label for="automation-enabled" class="text-gray-300">启用自动化策略</label>
         <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" id="automation-enabled" class="sr-only peer" [checked]="automation().enabled" (change)="handleAutomationToggle($event)">
+          <input type="checkbox" id="automation-enabled" class="sr-only peer" [checked]="automation().enabled" (change)="updateAutomationEnabled($event)">
           <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
         </label>
       </div>
       <div>
         <label for="poll-interval" class="block text-sm font-medium text-gray-400 mb-1">监控轮询间隔 (秒)</label>
-        <input type="number" id="poll-interval" [value]="automation().interval" (input)="handleAutomationInput($event, 'interval')" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+        <input type="number" id="poll-interval" [value]="automation().interval" (input)="updateAutomationInterval($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
       </div>
       <div>
         <label for="throttle-action" class="block text-sm font-medium text-gray-400 mb-1">限速后自动动作</label>
-        <select id="throttle-action" [value]="automation().action" (change)="handleAutomationSelect($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+        <select id="throttle-action" [value]="automation().action" (change)="updateAutomationAction($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
           <option value="pause">暂停所有下载</option>
           <option value="limit">限制全局速度</option>
           <option value="notify">仅通知</option>
@@ -87,19 +87,19 @@
     <div class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-gray-400 mb-1">qBittorrent 全局用户名</label>
-        <input type="text" [value]="integrations().qbitUser" (input)="handleIntegrationsInput($event, 'qbitUser')" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+        <input type="text" [value]="integrations().qbitUser" (input)="updateQbitUser($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-400 mb-1">qBittorrent 全局密码</label>
-        <input type="password" [value]="integrations().qbitPass" (input)="handleIntegrationsInput($event, 'qbitPass')" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+        <input type="password" [value]="integrations().qbitPass" (input)="updateQbitPass($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-400 mb-1">Vertex 配置文件路径</label>
-        <input type="text" [value]="integrations().vertexPath" (input)="handleIntegrationsInput($event, 'vertexPath')" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+        <input type="text" [value]="integrations().vertexPath" (input)="updateVertexPath($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
       </div>
        <div>
         <label class="block text-sm font-medium text-gray-400 mb-1">API 端点</label>
-        <input type="text" [value]="integrations().apiEndpoint" (input)="handleIntegrationsInput($event, 'apiEndpoint')" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
+        <input type="text" [value]="integrations().apiEndpoint" (input)="updateApiEndpoint($event)" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white">
       </div>
     </div>
   </div>

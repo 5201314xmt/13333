@@ -13,6 +13,7 @@ interface TrafficRecord {
 
 @Component({
   selector: 'app-traffic-stats',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './traffic-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

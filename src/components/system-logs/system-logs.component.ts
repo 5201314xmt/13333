@@ -11,6 +11,7 @@ interface LogEntry {
 
 @Component({
   selector: 'app-system-logs',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './system-logs.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
