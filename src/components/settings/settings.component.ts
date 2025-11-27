@@ -16,15 +16,12 @@ export class SettingsComponent {
   private settingsService = inject(SettingsService);
   
   // Expose signals from the service to the template
+  scpAccounts = this.settingsService.scpAccounts;
   notifications = this.settingsService.notifications;
   automation = this.settingsService.automation;
   integrations = this.settingsService.integrations;
 
   // Local state for UI management (e.g., forms)
-  scpAccounts = signal([
-    { id: 1, login: 'user123', password: '•••', status: 'Active' },
-    { id: 2, login: 'user456', password: '•••', status: 'Inactive' }
-  ]);
   showAddAccountForm = signal(false);
   newAccountLogin = signal('');
   newAccountPassword = signal('');
@@ -37,9 +34,9 @@ export class SettingsComponent {
       this.toastService.show('登录名和密码不能为空', 'error');
       return;
     }
-
-    const newId = this.scpAccounts().length > 0 ? Math.max(...this.scpAccounts().map(a => a.id)) + 1 : 1;
-    this.scpAccounts.update(accounts => [...accounts, { id: newId, login, password: '•••', status: 'Inactive' }]);
+    
+    // Logic is now in the service to update the signal
+    this.settingsService.addScpAccount(login);
 
     this.toastService.show(`账号 ${login} 已添加`, 'success');
 
@@ -49,7 +46,7 @@ export class SettingsComponent {
   }
 
   removeAccount(accountId: number) {
-    this.scpAccounts.update(accounts => accounts.filter(a => a.id !== accountId));
+    this.settingsService.removeScpAccount(accountId);
     this.toastService.show('账号已删除', 'success');
   }
   

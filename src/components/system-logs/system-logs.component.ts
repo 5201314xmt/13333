@@ -1,4 +1,5 @@
 
+
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -40,10 +41,6 @@ export class SystemLogsComponent {
       log.level.toLowerCase().includes(search)
     );
   });
-  
-  handleKeyword(event: Event) {
-    this.keyword.set((event.target as HTMLInputElement).value);
-  }
 
   getLevelClass(level: 'INFO' | 'WARN' | 'ERROR'): string {
     switch(level) {

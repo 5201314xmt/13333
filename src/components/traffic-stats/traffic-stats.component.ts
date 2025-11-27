@@ -1,4 +1,5 @@
 
+
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -70,17 +71,5 @@ export class TrafficStatsComponent {
       return (gb / 1024).toFixed(2) + ' TB';
     }
     return gb.toFixed(2) + ' GB';
-  }
-
-  handleStartDate(event: Event) {
-    this.startDate.set((event.target as HTMLInputElement).value);
-  }
-  
-  handleEndDate(event: Event) {
-    this.endDate.set((event.target as HTMLInputElement).value);
-  }
-
-  handleKeyword(event: Event) {
-    this.keyword.set((event.target as HTMLInputElement).value);
   }
 }
